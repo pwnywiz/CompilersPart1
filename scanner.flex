@@ -63,10 +63,13 @@ WhiteSpace     = {LineTerminator} | [ \t\f]
    or just a zero.  */
 dec_int_lit = 0 | [1-9][0-9]*
 
+dec_int_word = [A-Za-z_][A-Za-z_0-9]*
+
 %%
 /* ------------------------Lexical Rules Section---------------------- */
 
 <YYINITIAL> {
+
 /* operators */
  "+"      { return symbol(sym.PLUS); }
  "-"      { return symbol(sym.MINUS); }
@@ -74,10 +77,19 @@ dec_int_lit = 0 | [1-9][0-9]*
  "("      { return symbol(sym.LPAREN); }
  ")"      { return symbol(sym.RPAREN); }
  ";"      { return symbol(sym.SEMI); }
+ "="      { return symbol(sym.EQUAL); }
+ ","      { return symbol(sym.COMMA); }
+ "}"      { return symbol(sym.RBRACE); }
+ ")" + {WhiteSpace} + "{"      { return symbol(sym.PLBRACE); }
+
+ /* statements */
+  "if"     { return symbol(sym.IF); }
+  "else"   { return symbol(sym.ELSE); }
 }
 
-
 {dec_int_lit} { return symbol(sym.NUMBER, new Integer(yytext())); }
+
+{dec_int_word} { return symbol(sym.WORD, new String(yytext())); }
 
 {WhiteSpace} { /* just skip what was found, do nothing */ }
 
