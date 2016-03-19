@@ -22,17 +22,18 @@ scan with {: return s.next_token(); :};
 /* Terminals (tokens returned by the scanner). */
 terminal            SEMI, PLUS, MINUS, TIMES, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, LBRACE, IF, ELSE;
 terminal Integer    NUMBER;        // our scanner provides numbers as integers
-terminal String     STR;
+terminal String     STR, STRING_LITERAL;
 
 /*  Non terminals */
 non terminal            expr_list;
-non terminal String     expr;
+non terminal String     expr, arg;
 
 /**
  *  Precedence Declarations
  */
 precedence left PLUS, MINUS;
 precedence left TIMES;
+// precedence left COMMA;
 
 /**
  *  The Grammar Rules
@@ -50,9 +51,14 @@ expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
              ;
 */
 
-expr_list ::= expr_list expr:e                        {: System.out.println(e);:}
+expr_list ::= expr_list expr:e                             {: System.out.println(e);:}
             |
             ;
 
-expr      ::= STR:s LPAREN RPAREN LBRACE RBRACE   {: RESULT = "( " + "define " + " (" + s + ") " + ")"; :}
+expr      ::= STR:s LPAREN arg:a RPAREN LBRACE RBRACE      {: RESULT = "( " + "define " + " (" + s + a + ") " + ")"; :}
+            ;
+
+arg       ::= arg:a STR:s                                    {: RESULT = " " + a + s;       :}
+            | arg:a COMMA                                    {: RESULT = a + ",";     :}
+            |                                                {: RESULT = "";          :}
             ;

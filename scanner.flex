@@ -42,6 +42,7 @@ import java_cup.runtime.*;
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline, yycolumn, value);
     }
+    StringBuffer stringBuffer = new StringBuffer();
 %}
 
 /*
@@ -65,6 +66,8 @@ dec_int_lit = 0 | [1-9][0-9]*
 
 dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
 
+%state STRING
+
 %%
 /* ------------------------Lexical Rules Section---------------------- */
 
@@ -81,10 +84,22 @@ dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
  ","      { return symbol(sym.COMMA); }
  "}"      { return symbol(sym.RBRACE); }
  "{"      { return symbol(sym.LBRACE); }
-
+ \"       { stringBuffer.setLength(0); yybegin(STRING); }
  /* statements */
   "if"     { return symbol(sym.IF); }
   "else"   { return symbol(sym.ELSE); }
+}
+
+<STRING> {
+      \"                             { yybegin(YYINITIAL);
+                                       return symbol(sym.STRING_LITERAL, stringBuffer.toString()); }
+      [^\n\r\"\\]+                   { stringBuffer.append( yytext() ); }
+      \\t                            { stringBuffer.append('\t'); }
+      \\n                            { stringBuffer.append('\n'); }
+
+      \\r                            { stringBuffer.append('\r'); }
+      \\\"                           { stringBuffer.append('\"'); }
+      \\                             { stringBuffer.append('\\'); }
 }
 
 {dec_int_lit} { return symbol(sym.NUMBER, new Integer(yytext())); }
