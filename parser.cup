@@ -20,13 +20,13 @@ scan with {: return s.next_token(); :};
  */
 
 /* Terminals (tokens returned by the scanner). */
-terminal            SEMI, PLUS, MINUS, TIMES, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, PLBRACE;
+terminal            SEMI, PLUS, MINUS, TIMES, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, LBRACE, IF, ELSE;
 terminal Integer    NUMBER;        // our scanner provides numbers as integers
-terminal String     IF, ELSE;
+terminal String     STR;
 
 /*  Non terminals */
 non terminal            expr_list;
-non terminal Integer    expr;      // used to store evaluated subexpressions
+non terminal String     expr;
 
 /**
  *  Precedence Declarations
@@ -37,6 +37,7 @@ precedence left TIMES;
 /**
  *  The Grammar Rules
  */
+ /*
 expr_list ::= expr_list expr:e SEMI         {: System.out.println(e);:}
             | expr:e SEMI                   {: System.out.println(e);:}
 ;
@@ -47,3 +48,11 @@ expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
              | LPAREN expr:e RPAREN	        {: RESULT = e;           :}
              | NUMBER:n	                    {: RESULT = n;           :}
              ;
+*/
+
+expr_list ::= expr_list expr:e                        {: System.out.println(e);:}
+            |
+            ;
+
+expr      ::= STR:s LPAREN RPAREN LBRACE RBRACE   {: RESULT = "( " + "define " + " (" + s + ") " + ")"; :}
+            ;
