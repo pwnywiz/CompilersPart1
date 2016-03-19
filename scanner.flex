@@ -63,7 +63,7 @@ WhiteSpace     = {LineTerminator} | [ \t\f]
    or just a zero.  */
 dec_int_lit = 0 | [1-9][0-9]*
 
-dec_int_word = [A-Za-z_][A-Za-z_0-9]*
+dec_str_word = [A-Za-z_][A-Za-z_0-9]*
 
 %%
 /* ------------------------Lexical Rules Section---------------------- */
@@ -89,7 +89,7 @@ dec_int_word = [A-Za-z_][A-Za-z_0-9]*
 
 {dec_int_lit} { return symbol(sym.NUMBER, new Integer(yytext())); }
 
-{dec_int_word} { return symbol(sym.WORD, new String(yytext())); }
+{dec_str_word} { return symbol(sym.WORD, new String(yytext())); }
 
 {WhiteSpace} { /* just skip what was found, do nothing */ }
 
