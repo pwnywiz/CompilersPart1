@@ -74,20 +74,21 @@ dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
 <YYINITIAL> {
 
 /* operators */
- "+"      { return symbol(sym.PLUS); }
- "-"      { return symbol(sym.MINUS); }
- "*"      { return symbol(sym.TIMES); }
+ "+"      { return symbol(sym.PLUS);   }
+ "-"      { return symbol(sym.MINUS);  }
+ "*"      { return symbol(sym.TIMES);  }
  "("      { return symbol(sym.LPAREN); }
  ")"      { return symbol(sym.RPAREN); }
- ";"      { return symbol(sym.SEMI); }
- "="      { return symbol(sym.EQUAL); }
- ","      { return symbol(sym.COMMA); }
+ ";"      { return symbol(sym.SEMI);   }
+ "="      { return symbol(sym.EQUAL);  }
+ ","      { return symbol(sym.COMMA);  }
  "}"      { return symbol(sym.RBRACE); }
  "{"      { return symbol(sym.LBRACE); }
+ // "\""     { return symbol(sym.QMARK);  }
  \"       { stringBuffer.setLength(0); yybegin(STRING); }
  /* statements */
-  "if"     { return symbol(sym.IF); }
-  "else"   { return symbol(sym.ELSE); }
+ "if"     { return symbol(sym.IF);     }
+ "else"   { return symbol(sym.ELSE);   }
 }
 
 <STRING> {

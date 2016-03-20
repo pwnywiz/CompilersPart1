@@ -26,7 +26,7 @@ terminal String     STR, STRING_LITERAL;
 
 /*  Non terminals */
 non terminal            expr_list;
-non terminal String     expr, arg;
+non terminal String     def, body, arg1, arg2;
 
 /**
  *  Precedence Declarations
@@ -51,14 +51,24 @@ expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
              ;
 */
 
-expr_list ::= expr_list expr:e                             {: System.out.println(e);:}
-            |
-            ;
+expr_list  ::= expr_list definition:d                        {: System.out.println(d);:}
+             |
+             ;
 
-expr      ::= STR:s LPAREN arg:a RPAREN LBRACE RBRACE      {: RESULT = "( " + "define " + " (" + s + a + ") " + ")"; :}
-            ;
+def        ::= STR:s LPAREN arg1:a1 RPAREN LBRACE body:b RBRACE     {: RESULT = "(" + "define " + " (" + s  + a1 + ") " + ")"; :}
+             ;
 
-arg       ::= arg:a STR:s                                    {: RESULT = " " + a + s;       :}
-            | arg:a COMMA                                    {: RESULT = a + ",";     :}
-            |                                                {: RESULT = "";          :}
-            ;
+arg1       ::= arg1:a1 STR:s                                 {: RESULT = a1 + " " + s;           :}
+             | arg1:a1 COMMA                                 {: RESULT = a1;                     :}
+             |                                               {: RESULT = "";                     :}
+             ;
+
+arg2       ::= arg2:a2 STRING_LITERAL:sl                     {: RESULT = a2 + " \"" + sl + "\""; :}
+             | arg2:a2 COMMA                                 {: RESULT = a2;                     :}
+             |                                               {: RESULT = "";                     :}
+             ;
+
+body       ::=                                  {: RESULT =            :}
+             |                                  {: RESULT = ;                     :}
+             |                                               {: RESULT = "";                     :}
+             ;
