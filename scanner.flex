@@ -62,7 +62,6 @@ WhiteSpace     = {LineTerminator} | [ \t\f]
 /* A literal integer is is a number beginning with a number between
    one and nine followed by zero or more numbers between zero and nine
    or just a zero.  */
-dec_int_lit = 0 | [1-9][0-9]*
 
 dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
 
@@ -75,16 +74,12 @@ dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
 
 /* operators */
  "+"      { return symbol(sym.PLUS);   }
- "-"      { return symbol(sym.MINUS);  }
- "*"      { return symbol(sym.TIMES);  }
  "("      { return symbol(sym.LPAREN); }
  ")"      { return symbol(sym.RPAREN); }
- ";"      { return symbol(sym.SEMI);   }
  "="      { return symbol(sym.EQUAL);  }
  ","      { return symbol(sym.COMMA);  }
  "}"      { return symbol(sym.RBRACE); }
  "{"      { return symbol(sym.LBRACE); }
- // "\""     { return symbol(sym.QMARK);  }
  \"       { stringBuffer.setLength(0); yybegin(STRING); }
  /* statements */
  "if"     { return symbol(sym.IF);     }
@@ -102,8 +97,6 @@ dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
       \\\"                           { stringBuffer.append('\"'); }
       \\                             { stringBuffer.append('\\'); }
 }
-
-{dec_int_lit} { return symbol(sym.NUMBER, new Integer(yytext())); }
 
 {dec_str_lit} { return symbol(sym.STR, new String(yytext())); }
 

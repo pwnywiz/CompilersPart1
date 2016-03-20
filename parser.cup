@@ -20,20 +20,22 @@ scan with {: return s.next_token(); :};
  */
 
 /* Terminals (tokens returned by the scanner). */
-terminal            SEMI, PLUS, MINUS, TIMES, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, LBRACE, IF, ELSE;
-terminal Integer    NUMBER;        // our scanner provides numbers as integers
+terminal            PLUS, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, LBRACE, IF, ELSE;
 terminal String     STR, STRING_LITERAL;
 
 /*  Non terminals */
 non terminal            expr_list;
-non terminal String     def, body, arg1, arg2;
+non terminal String     def, defexec, body, arg1, arg2;
 
 /**
  *  Precedence Declarations
  */
-precedence left PLUS, MINUS;
-precedence left TIMES;
-// precedence left COMMA;
+ precedence left COMMA,STR;
+ precedence left EQUAL;
+ precedence left PLUS;
+ precedence left LPAREN,RPAREN;
+ precedence left RBRACE, LBRACE;
+ precedence left IF,ELSE;
 
 /**
  *  The Grammar Rules
@@ -51,24 +53,41 @@ expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
              ;
 */
 
-expr_list  ::= expr_list definition:d                        {: System.out.println(d);:}
+expr_list  ::= expr_list def:d                        {: System.out.println(d);  :}
+            //  | expr_list defexec:de                   {: System.out.println(dc); :}
              |
              ;
 
-def        ::= STR:s LPAREN arg1:a1 RPAREN LBRACE body:b RBRACE     {: RESULT = "(" + "define " + " (" + s  + a1 + ") " + ")"; :}
+def        ::= STR:s LPAREN arg1:a1 RPAREN LBRACE body:b RBRACE     {: RESULT = "(" + "define " + " (" + s  + a1 + ") " + b + ")"; :}
+            //  | STR:s LPAREN arg2:a2 RPAREN LBRACE body:b RBRACE     {: RESULT = "(" + "define " + " (" + s  + a2 + ") " + b + ")"; :}
              ;
 
-arg1       ::= arg1:a1 STR:s                                 {: RESULT = a1 + " " + s;           :}
-             | arg1:a1 COMMA                                 {: RESULT = a1;                     :}
+// defexec    ::= STR:s LPAREN defexec:de RPAREN                       {: RESULT = "(" + de + ")"; :}
+//              | STR:s LPAREN arg2:a2 RPAREN                          {: RESULT = a2;             :}
+//              ;
+
+// arg1       ::= arg1:a1 STR:s                                 {: RESULT = a1 + " " + s;           :}
+//              | arg1:a1 COMMA                                 {: RESULT = a1;                     :}
+//              |                                               {: RESULT = "";                     :}
+//              ;
+
+arg1       ::= arg1:ar1 COMMA arg1:ar2                                {: RESULT = " " + ar1 + " " + ar2;           :}
+             | STR:s                                 {: RESULT = s;                     :}
              |                                               {: RESULT = "";                     :}
              ;
 
-arg2       ::= arg2:a2 STRING_LITERAL:sl                     {: RESULT = a2 + " \"" + sl + "\""; :}
-             | arg2:a2 COMMA                                 {: RESULT = a2;                     :}
+// arg2       ::= arg2:a2 STRING_LITERAL:sl                     {: RESULT = a2 + " \"" + sl + "\""; :}
+//              | arg2:a2 COMMA                                 {: RESULT = a2;                     :}
+//              |                                               {: RESULT = "";                     :}
+//              ;
+
+arg2       ::= arg2:a1 COMMA arg2:a2                     {: RESULT = a1 + " " + a2; :}
+             | STRING_LITERAL:sl                                {: RESULT = " \"" + sl + "\"";                     :}
              |                                               {: RESULT = "";                     :}
              ;
 
-body       ::=                                  {: RESULT =            :}
-             |                                  {: RESULT = ;                     :}
-             |                                               {: RESULT = "";                     :}
+body       ::= body:b1 PLUS body:b2                          {: RESULT = "(string-append " + b1 + " " + b2 + ")"; :}
+             | STRING_LITERAL:sl                             {: RESULT = "\"" + sl + "\"";                        :}
+             | STR:s                                         {: RESULT = s;                                       :}
+             |                                               {: RESULT = "";                                      :}
              ;
