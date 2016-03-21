@@ -25,7 +25,7 @@ terminal String     STR, STRING_LITERAL;
 
 /*  Non terminals */
 non terminal            expr_list;
-non terminal String     def, defexec, body, arg1, arg2, expr;
+non terminal String     def, defexec, body, argdef, argexec, more, more2, defexec2, argexec2;
 
 /**
  *  Precedence Declarations
@@ -40,18 +40,6 @@ non terminal String     def, defexec, body, arg1, arg2, expr;
 
 /**
  *  The Grammar Rules
- */
- /*
-expr_list ::= expr_list expr:e SEMI         {: System.out.println(e);:}
-            | expr:e SEMI                   {: System.out.println(e);:}
-;
-expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
-             | expr:e1 MINUS expr:e2        {: RESULT = e1-e2;       :}
-             | expr:e1 TIMES expr:e2        {: RESULT = e1*e2;       :}
-             | MINUS expr:e                 {: RESULT = -e;          :}
-             | LPAREN expr:e RPAREN	        {: RESULT = e;           :}
-             | NUMBER:n	                    {: RESULT = n;           :}
-             ;
 */
 
 expr_list  ::= expr_list def:d                        {: System.out.println(d);  :}
@@ -59,43 +47,46 @@ expr_list  ::= expr_list def:d                        {: System.out.println(d); 
              |
              ;
 
-def        ::= STR:s LPAREN arg1:a1 RPLBRACE body:b RBRACE     {: RESULT = "(" + "define " + " (" + s  + a1 + ") " + b + ")"; :}
+//  Exw enwsei to "}(" se RPLBRACE gia na mhn uparksei conflict me thn klhsh ths defexec
+def        ::= STR:s LPAREN argdef:a1 RPLBRACE body:b RBRACE     {: RESULT = "(" + "define " + " (" + s  + a1 + ") " + b + ")"; :}
              ;
 
-defexec    ::= STR:s LPAREN arg2:a2 RPAREN                          {: RESULT = "(" + s  + a2 + ")";             :}
+//  Ta orismata gia th dhlwsh sunarthshs
+argdef     ::= argdef:a1 COMMA argdef:a2                           {: RESULT = " " + a1 + " " + a2;           :}
+             | STR:s                                           {: RESULT = s;                     :}
+             |                                                 {: RESULT = "";                     :}
              ;
 
-arg1       ::= arg1:a1 COMMA arg1:a2                            {: RESULT = " " + a1 + " " + a2;           :}
-             | STR:s                                            {: RESULT = s;                     :}
-             |                                                  {: RESULT = "";                     :}
+//  H klhsh ths sunarthshs
+defexec    ::= STR:s LPAREN argexec:ae RPAREN                     {: RESULT = "(" + s  + ae + ")";             :}
              ;
 
-// arg2       ::= arg2:a2 STRING_LITERAL:sl                     {: RESULT = a2 + " \"" + sl + "\""; :}
-//              | arg2:a2 COMMA                                 {: RESULT = a2;                     :}
-//              |                                               {: RESULT = "";                     :}
-//              ;
+defexec2    ::= STR:s LPAREN argexec2:ae RPAREN                     {: RESULT = "(" + s  + ae + ")";             :}
+             ;
 
-// arg2       ::= arg2:a1 COMMA arg2:a2                            {: RESULT = " " + a1 + " " + a2;           :}
-//              | STRING_LITERAL:sl                                            {: RESULT = " \"" + sl + "\"";                     :}
-//              |                                                  {: RESULT = "";                     :}
-//              ;
+//  Ta orismata gia thn klhsh sunarthshs
+argexec    ::= more:m COMMA argexec:ae			      {: RESULT = " " + m + " " + ae; 	  :}
+		         | more:m argexec:ae				          {: RESULT = " " + m + " " + ae;  :}
+		         |								                    {: RESULT = "";           :}
+             ;
 
-// arg2       ::= arg2:a2 STRING_LITERAL:sl                     {: RESULT = a2 + " \"" + sl + "\""; :}
-//              | arg2:a2 COMMA                                 {: RESULT = a2;                     :}
-//              |                                               {: RESULT = "";                     :}
-//              ;
+argexec2   ::= more2:m COMMA argexec2:ae			      {: RESULT = " " + m + " " + ae; 	  :}
+		         | more2:m argexec2:ae				          {: RESULT = " " + m + " " + ae;  :}
+		         |								                    {: RESULT = "";           :}
+             ;
 
-arg2 ::= expr:e arg2:a				{: RESULT = " "+e+" "+a;  :}
-		| COMMA expr:e arg2:a			{: RESULT = e+" "+a; 	  :}
-		|								{: RESULT = "";           :}
-    ;
+more       ::= defexec2:de							              {: RESULT = de; 					 		 :}
+             | more:m1 PLUS more:m2         	      {: RESULT = "("+"+"+m1+" "+m2+")";       :}
+             | LPAREN more:m RPAREN	    		        {: RESULT = m;           		 		 :}
+             | STRING_LITERAL:sl	                  {: RESULT = "\"" + sl + "\"";           		 		 :}
+             ;
 
-expr      ::=  expr:e1 PLUS  expr:e2         	{: RESULT = "("+"+"+e1+" "+e2+")";       :}
-             | LPAREN expr:e RPAREN	    		{: RESULT = e;           		 		 :}
-             | STRING_LITERAL:n	                    	{: RESULT = n;           		 		 :}
-			 | defexec:c							{: RESULT = c; 					 		 :}
-;
-
+more2      ::= defexec2:de							              {: RESULT = de; 					 		 :}
+             | more2:m1 PLUS more2:m2         	      {: RESULT = "("+"+"+m1+" "+m2+")";       :}
+             | LPAREN more2:m RPAREN	    		        {: RESULT = m;           		 		 :}
+             | STRING_LITERAL:sl	                  {: RESULT = "\"" + sl + "\"";           		 		 :}
+             | STR:s                                         {: RESULT = s;                          :}
+             ;
 
 body       ::= body:b1 PLUS body:b2                          {: RESULT = "(string-append " + b1 + " " + b2 + ")"; :}
              | STRING_LITERAL:sl                             {: RESULT = "\"" + sl + "\"";                        :}

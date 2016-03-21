@@ -1,7 +1,7 @@
 name()  {
     "John"
 }
-name(name())
+name(name("x"), name(y))
 AA(aa,b,c) {
   aa + b + c
 }
