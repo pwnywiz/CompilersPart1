@@ -80,10 +80,10 @@ dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
  ","      { return symbol(sym.COMMA);  }
  "}"      { return symbol(sym.RBRACE); }
  "{"      { return symbol(sym.LBRACE); }
- \"       { stringBuffer.setLength(0); yybegin(STRING); }
- /* statements */
+ ")" + {WhiteSpace} + "{" { return symbol(sym.RPLBRACE); }
  "if"     { return symbol(sym.IF);     }
  "else"   { return symbol(sym.ELSE);   }
+ \"       { stringBuffer.setLength(0); yybegin(STRING); }
 }
 
 <STRING> {
