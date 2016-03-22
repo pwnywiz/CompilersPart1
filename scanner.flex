@@ -83,6 +83,7 @@ dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
  ")" + {WhiteSpace} + "{" { return symbol(sym.RPLBRACE); }
  "if"     { return symbol(sym.IF);     }
  "else"   { return symbol(sym.ELSE);   }
+ "in"   { return symbol(sym.IN);   }
  \"       { stringBuffer.setLength(0); yybegin(STRING); }
 }
 

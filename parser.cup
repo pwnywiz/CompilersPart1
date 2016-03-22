@@ -20,18 +20,18 @@ scan with {: return s.next_token(); :};
  */
 
 /* Terminals (tokens returned by the scanner). */
-terminal            PLUS, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, LBRACE, RPLBRACE, IF, ELSE;
+terminal            PLUS, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, LBRACE, RPLBRACE, IF, ELSE, IN;
 terminal String     STR, STRING_LITERAL;
 
 /*  Non terminals */
 non terminal            expr_list;
-non terminal String     def, defexec, body, argdef, argexec, more, more2, defexec2, argexec2;
+non terminal String     def, defexec, body, argdef, argexec, more, more2, defexec2, argexec2, ifstate, ifarg, iftrue, elsetrue;
 
 /**
  *  Precedence Declarations
  */
  precedence left COMMA,STR;
- precedence left EQUAL;
+ precedence left EQUAL, IN;
  precedence left PLUS;
  precedence left LPAREN,RPAREN;
  precedence left RBRACE, LBRACE;
@@ -90,6 +90,24 @@ more2      ::= defexec2:de							              {: RESULT = de; 					 		 :}
 
 body       ::= body:b1 PLUS body:b2                          {: RESULT = "(string-append " + b1 + " " + b2 + ")"; :}
              | STRING_LITERAL:sl                             {: RESULT = "\"" + sl + "\"";                        :}
+             | LPAREN body:b RPAREN	    		                 {: RESULT = b;           		 		                    :}
              | STR:s                                         {: RESULT = s;                                       :}
+             | ifstate:is                                    {: RESULT = is;                                      :}
              |                                               {: RESULT = "";                                      :}
              ;
+
+ifstate    ::= IF LPAREN ifarg:ia RPAREN iftrue:it			     {: RESULT = "(if " + ia + it + ")"; 	:}
+             ;
+
+ifarg      ::= ifstate:is			                               {: RESULT = is; 	:}
+             | more2:m1 EQUAL more2:m2                       {: RESULT = "(equal? " + m1 + m2 + ")";    :}
+             | more2:m1 IN more2:m2                          {: RESULT = "(substring? " + m1 + m2 + ")";    :}
+             ;
+
+iftrue     ::= ifstate:is			                               {: RESULT = is; 	:}
+             | more2:m ELSE elsetrue:e                       {: RESULT = m + e;    :}
+             ;
+
+elsetrue     ::= iftrue:is			                             {: RESULT = is; 	:}
+              | more2:m                                      {: RESULT = m;    :}
+              ;
