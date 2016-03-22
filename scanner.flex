@@ -79,7 +79,7 @@ dec_str_lit = [_A-Za-z][_A-Za-z0-9]*
  "="      { return symbol(sym.EQUAL);  }
  ","      { return symbol(sym.COMMA);  }
  "}"      { return symbol(sym.RBRACE); }
- "{"      { return symbol(sym.LBRACE); }
+ // "{"      { return symbol(sym.LBRACE); }
  ")" + {WhiteSpace} + "{" { return symbol(sym.RPLBRACE); }
  "if"     { return symbol(sym.IF);     }
  "else"   { return symbol(sym.ELSE);   }

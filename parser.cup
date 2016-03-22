@@ -20,7 +20,7 @@ scan with {: return s.next_token(); :};
  */
 
 /* Terminals (tokens returned by the scanner). */
-terminal            PLUS, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, LBRACE, RPLBRACE, IF, ELSE, IN;
+terminal            PLUS, LPAREN, RPAREN, EQUAL, COMMA, RBRACE, RPLBRACE, IF, ELSE, IN;
 terminal String     STR, STRING_LITERAL;
 
 /*  Non terminals */
@@ -34,7 +34,7 @@ non terminal String     def, defexec, body, argdef, argexec, more, more2, defexe
  precedence left EQUAL, IN;
  precedence left PLUS;
  precedence left LPAREN,RPAREN;
- precedence left RBRACE, LBRACE;
+ precedence left RBRACE;
  precedence left RPLBRACE;
  precedence left IF,ELSE;
 
@@ -48,44 +48,44 @@ expr_list  ::= expr_list def:d                        {: System.out.println(d); 
              ;
 
 //  Exw enwsei to "}(" se RPLBRACE gia na mhn uparksei conflict me thn klhsh ths defexec
-def        ::= STR:s LPAREN argdef:a1 RPLBRACE body:b RBRACE     {: RESULT = "(" + "define " + " (" + s  + a1 + ") " + b + ")"; :}
+def        ::= STR:s LPAREN argdef:a1 RPLBRACE body:b RBRACE     {: RESULT = "(" + "define " + " (" + s + " "+ a1 + ") " + b + ")"; :}
              ;
 
 //  Ta orismata gia th dhlwsh sunarthshs
-argdef     ::= argdef:a1 COMMA argdef:a2                           {: RESULT = " " + a1 + " " + a2;           :}
-             | STR:s                                           {: RESULT = s;                     :}
-             |                                                 {: RESULT = "";                     :}
+argdef     ::= argdef:a1 COMMA argdef:a2                     {: RESULT = " " + a1 + " " + a2;   :}
+             | STR:s                                         {: RESULT = s;                     :}
+             |                                               {: RESULT = "";                    :}
              ;
 
 //  H klhsh ths sunarthshs
-defexec    ::= STR:s LPAREN argexec:ae RPAREN                     {: RESULT = "(" + s  + ae + ")";             :}
+defexec    ::= STR:s LPAREN argexec:ae RPAREN                {: RESULT = "(" + s  + ae + ")";             :}
              ;
 
-defexec2    ::= STR:s LPAREN argexec2:ae RPAREN                     {: RESULT = "(" + s  + ae + ")";             :}
+defexec2    ::= STR:s LPAREN argexec2:ae RPAREN              {: RESULT = "(" + s  + ae + ")";             :}
              ;
 
 //  Ta orismata gia thn klhsh sunarthshs
-argexec    ::= more:m COMMA argexec:ae			      {: RESULT = " " + m + " " + ae; 	  :}
-		         | more:m argexec:ae				          {: RESULT = " " + m + " " + ae;  :}
-		         |								                    {: RESULT = "";           :}
+argexec    ::= more:m COMMA argexec:ae			                 {: RESULT = " " + m + " " + ae; 	  :}
+		         | more:m argexec:ae				                     {: RESULT = " " + m + " " + ae;    :}
+		         |								                               {: RESULT = "";                    :}
              ;
 
-argexec2   ::= more2:m COMMA argexec2:ae			      {: RESULT = " " + m + " " + ae; 	  :}
-		         | more2:m argexec2:ae				          {: RESULT = " " + m + " " + ae;  :}
-		         |								                    {: RESULT = "";           :}
+argexec2   ::= more2:m COMMA argexec2:ae			               {: RESULT = " " + m + " " + ae; 	 :}
+		         | more2:m argexec2:ae				                   {: RESULT = " " + m + " " + ae;   :}
+		         |								                               {: RESULT = "";                   :}
              ;
 
-more       ::= defexec2:de							              {: RESULT = de; 					 		 :}
-             | more:m1 PLUS more:m2         	      {: RESULT = "("+"+"+m1+" "+m2+")";       :}
-             | LPAREN more:m RPAREN	    		        {: RESULT = m;           		 		 :}
-             | STRING_LITERAL:sl	                  {: RESULT = "\"" + sl + "\"";           		 		 :}
+more       ::= defexec2:de							                     {: RESULT = de; 					 		                              :}
+             | more:m1 PLUS more:m2         	               {: RESULT = "(string-append " + m1 + " " + m2 + ")";       :}
+             | LPAREN more:m RPAREN	    		                 {: RESULT = m;           		 		                          :}
+             | STRING_LITERAL:sl	                           {: RESULT = "\"" + sl + "\"";           		 		            :}
              ;
 
-more2      ::= defexec2:de							              {: RESULT = de; 					 		 :}
-             | more2:m1 PLUS more2:m2         	      {: RESULT = "("+"+"+m1+" "+m2+")";       :}
-             | LPAREN more2:m RPAREN	    		        {: RESULT = m;           		 		 :}
-             | STRING_LITERAL:sl	                  {: RESULT = "\"" + sl + "\"";           		 		 :}
-             | STR:s                                         {: RESULT = s;                          :}
+more2      ::= defexec2:de							                     {: RESULT = de; 					 		                              :}
+             | more2:m1 PLUS more2:m2         	             {: RESULT = "(string-append " + m1 + " " + m2 + ")";       :}
+             | LPAREN more2:m RPAREN	    		               {: RESULT = m;           		 		                          :}
+             | STRING_LITERAL:sl	                           {: RESULT = "\"" + sl + "\"";           		 		            :}
+             | STR:s                                         {: RESULT = s;                                             :}
              ;
 
 body       ::= body:b1 PLUS body:b2                          {: RESULT = "(string-append " + b1 + " " + b2 + ")"; :}
@@ -96,18 +96,33 @@ body       ::= body:b1 PLUS body:b2                          {: RESULT = "(strin
              |                                               {: RESULT = "";                                      :}
              ;
 
-ifstate    ::= IF LPAREN ifarg:ia RPAREN iftrue:it			     {: RESULT = "(if " + ia + it + ")"; 	:}
+ifstate    ::= IF LPAREN ifarg:ia RPAREN iftrue:it ELSE	elsetrue:e		 {: RESULT = "(if " + ia + it + e + ")"; 	  :}
              ;
 
-ifarg      ::= ifstate:is			                               {: RESULT = is; 	:}
-             | more2:m1 EQUAL more2:m2                       {: RESULT = "(equal? " + m1 + m2 + ")";    :}
-             | more2:m1 IN more2:m2                          {: RESULT = "(substring? " + m1 + m2 + ")";    :}
+ifarg      ::= ifstate:is			                               {: RESULT = is; 	                                    :}
+             | more2:m1 EQUAL more2:m2                       {: RESULT = "(equal? " + m1 + " " + m2 + ")";        :}
+             | more2:m1 IN more2:m2                          {: RESULT = "(substring? " + m1 + " " + m2 + ")";    :}
              ;
 
-iftrue     ::= ifstate:is			                               {: RESULT = is; 	:}
-             | more2:m ELSE elsetrue:e                       {: RESULT = m + e;    :}
+iftrue     ::= ifstate:is			                               {: RESULT = is; 	       :}
+             | more2:m                                       {: RESULT = " " + m;    :}
              ;
 
-elsetrue     ::= iftrue:is			                             {: RESULT = is; 	:}
-              | more2:m                                      {: RESULT = m;    :}
-              ;
+elsetrue   ::= iftrue:is			                               {: RESULT = " " + is; 	 :}
+             ;
+
+// ifstate    ::= IF LPAREN ifarg:ia RPAREN iftrue:it			     {: RESULT = "(if " + ia + it; 	:}
+//              ;
+//
+// ifarg      ::= ifstate:is			                               {: RESULT = is; 	:}
+//              | more2:m1 EQUAL more2:m2                       {: RESULT = "(equal? " + m1 + " " + m2 + ")";    :}
+//              | more2:m1 IN more2:m2                          {: RESULT = "(substring? " + m1 + " " + m2 + ")";    :}
+//              ;
+//
+// iftrue     ::= ifstate:is			                               {: RESULT = is; 	:}
+//              | more2:m ELSE elsetrue:e                       {: RESULT = m + e + ")";    :}
+//              ;
+//
+// elsetrue     ::= iftrue:is			                             {: RESULT = is; 	:}
+//               | more2:m                                      {: RESULT = m;    :}
+//               ;
