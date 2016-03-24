@@ -59,7 +59,7 @@ argdef     ::= argdef:a1 COMMA argdef:a2                     {: RESULT = " " + a
 //  H klhsh ths sunarthshs
 defexec    ::= STR:s LPAREN argexec:ae RPAREN                {: RESULT = "(" + s  + ae + ")";             :}
              ;
-
+//  H klhsh sunarthshs se eswteriko orismo sunarthshs
 defexec2    ::= STR:s LPAREN argexec2:ae RPAREN              {: RESULT = "(" + s  + ae + ")";             :}
              ;
 
@@ -68,7 +68,7 @@ argexec    ::= more:m COMMA argexec:ae			     {: RESULT = " " + m + " " + ae;   
 	     | more:m argexec:ae			     {: RESULT = " " + m + " " + ae;    :}
 	     |						     {: RESULT = "";                    :}
              ;
-
+//  Ta orismata gia thn klhsh sunarthshs se eswteriko orismo sunarthshs
 argexec2   ::= more2:m COMMA argexec2:ae		     {: RESULT = " " + m + " " + ae;    :}
 	     | more2:m argexec2:ae			     {: RESULT = " " + m + " " + ae;    :}
 	     |					             {: RESULT = "";                    :}
@@ -79,7 +79,7 @@ more       ::= defexec:de				     {: RESULT = de;                    		      :}
              | LPAREN more:m RPAREN	    		     {: RESULT = m;           		 		      :}
              | STRING_LITERAL:sl	                     {: RESULT = "\"" + sl + "\"";           		      :}
              ;
-
+// Ta orismata sthn eswterikh klhsh apla periexoun kai metavlhth se sxesh me to more
 more2      ::= defexec2:de				     {: RESULT = de; 				              :}
              | more2:m1 PLUS more2:m2         	             {: RESULT = "(string-append " + m1 + " " + m2 + ")";     :}
              | LPAREN more2:m RPAREN	    		     {: RESULT = m;           		 		      :}
@@ -99,11 +99,11 @@ body       ::= body:b1 PLUS body:b2                          {: RESULT = "(strin
 ifstate    ::= IF LPAREN ifarg:ia RPAREN iftrue:it ELSE	elsetrue:e     {: RESULT = "(if " + ia + it + e + ")";    :}
              ;
 
-ifarg      ::= ifstate:is			             {: RESULT = is; 	                          	  :}
-             | more2:m			             {: RESULT = m; 	                          	  :}
-             | LPAREN ifarg:ia RPAREN	    		     {: RESULT = ia;           		 		      :}
-             | ifarg:ia1 EQUAL ifarg:ia2                       {: RESULT = "(equal? " + ia1 + " " + ia2 + ")";        :}
-             | ifarg:ia1 IN ifarg:ia2                          {: RESULT = "(substring? " + ia1 + " " + ia2 + ")";    :}
+ifarg      ::= ifstate:is			             {: RESULT = is; 	                          	   :}
+             | more2:m			                     {: RESULT = m; 	                          	   :}
+             | LPAREN ifarg:ia RPAREN	    		     {: RESULT = ia;           		 		   :}
+             | ifarg:ia1 EQUAL ifarg:ia2                     {: RESULT = "(equal? " + ia1 + " " + ia2 + ")";       :}
+             | ifarg:ia1 IN ifarg:ia2                        {: RESULT = "(substring? " + ia1 + " " + ia2 + ")";   :}
              ;
 
 iftrue     ::= ifstate:is			             {: RESULT = is; 	     :}
