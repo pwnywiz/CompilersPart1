@@ -28,8 +28,8 @@ class Calc {
 		return expr2;
     }
 
-	private int expr2(int term) throws IOException, ParseError {
-		if (lookaheadToken == '+' || lookaheadToken == '-') {
+    private int expr2(int term) throws IOException, ParseError {
+	        if (lookaheadToken == '+' || lookaheadToken == '-') {
 			char op = (char)lookaheadToken;
 			consume(lookaheadToken);
 			int nextterm = term();
@@ -37,7 +37,7 @@ class Calc {
 				return expr2(term + nextterm);
 			}
 			else {
-				return expr2(term - nextterm);
+					return expr2(term - nextterm);
 			}
 		}
 		return term;
